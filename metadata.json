@@ -1,0 +1,6 @@
+{
+  "name": "TributaBR - Analisador da Reforma Tributária",
+  "description": "Simulador tributário avançado comparativo entre o sistema atual (PIS, COFINS, ICMS, ISS, IPI) e o novo modelo da Reforma Tributária (IBS, CBS e Imposto Seletivo - EC 132/2023).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
