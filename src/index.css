@@ -44,3 +44,10 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* Prevenção de tradução automática que corrompe nós do React DOM */
+.notranslate,
+[translate="no"] {
+  translate: no;
+}
+
