@@ -46,7 +46,7 @@ export interface CompanyFinancialInput {
 export interface SimplesDREColumn {
   grossRevenue: number;
   consumptionTaxesPaid: number; // Débito de tributos sobre vendas/consumo
-  netRevenue: number; // Receita Operacional Líquida (Receita Bruta - Débito Consumo)
+  netRevenue: number; // Receita Operacional Líquida (Receita Bruta - Débito Consumo/Total Tributos)
   grossPurchases: number; // Total compras (insumos, energia, terceiros)
   creditsAppropriated: number; // Créditos apropriados sobre compras (R$ 0 no Por Dentro vs 100% no Híbrido)
   netCostPurchases: number; // Custo líquido de aquisições (grossPurchases - creditsAppropriated)
@@ -60,6 +60,11 @@ export interface SimplesDREColumn {
   netMarginPercent: number; // Margem Líquida Operacional (%)
   creditPassedToClientsRate: number; // Alíquota de crédito repassada a clientes PJ (%)
   creditPassedToClientsBrl: number; // Volume de crédito gerado para PJ (R$)
+  icmsDebit: number; // Parcela ICMS (Por Dentro) ou IBS (Híbrido)
+  issDebit: number; // Parcela ISS (Por Dentro) ou 0 (Híbrido)
+  pisCofinsDebit: number; // Parcela PIS/COFINS (Por Dentro) ou CBS (Híbrido)
+  selectiveDebit: number; // Imposto Seletivo (se houver)
+  totalDebits: number; // Total de tributos brutos sobre vendas
 }
 
 export interface SimplesComparisonAnalysis {

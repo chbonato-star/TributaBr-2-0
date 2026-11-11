@@ -14,7 +14,8 @@ import {
   Users, 
   Briefcase, 
   Sliders,
-  Sparkles
+  Sparkles,
+  Info
 } from 'lucide-react';
 
 interface SimplesSimulatorProps {
@@ -496,18 +497,17 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
 
       </div>
 
-      {/* DRE Comparativa Completa: Simples Por Dentro vs. Simples Híbrido */}
+      {/* DRE Comparativa Detalhada com Análise Vertical (%) - Conforme Modelo da Imagem */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden space-y-0">
         
-        {/* Topo da DRE com Seletor de Modo de Exibição */}
+        {/* Topo da Tabela com Seletor de Modo de Exibição (R$ e %) */}
         <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              Demonstração do Resultado do Exercício (DRE): Por Dentro vs. Híbrido
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              DRE Comparativa Detalhada com Análise Vertical (%)
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Estrutura contábil oficial (CPC 26) decompondo a fatia de consumo e tributos diretos do Simples Nacional
+              Confronto linha a linha entre o Simples "Por Dentro" (DAS Unificado) e o Simples "Híbrido" (IBS/CBS Por Fora - Art. 146-A CF), com valores em Reais (R$) e percentuais sobre a Receita Bruta (%)
             </p>
           </div>
 
@@ -546,29 +546,29 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
           </div>
         </div>
 
-        {/* Tabela Tabular com Alinhamento Numérico */}
+        {/* Grid Tabular Responsivo idêntico à DRE Geral */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider">
-                <th className="py-3 px-4 min-w-[260px]">Conta da DRE / Rubrica Contábil</th>
+                <th className="py-3 px-4 min-w-[260px]">CONTA DA DRE / RUBRICA FISCAL</th>
                 <th className="py-3 px-4 text-right min-w-[155px]">
-                  Simples "Por Dentro" {displayMode === 'both' ? '(R$ e % AV)' : displayMode === 'currency' ? '(R$)' : '(%)'}
+                  SIMPLES "POR DENTRO" {displayMode === 'both' ? '(R$ E % AV)' : displayMode === 'currency' ? '(R$)' : '(%)'}
                 </th>
                 <th className="py-3 px-4 text-right min-w-[155px]">
-                  Simples "Híbrido" {displayMode === 'both' ? '(R$ e % AV)' : displayMode === 'currency' ? '(R$)' : '(%)'}
+                  SIMPLES "HÍBRIDO" {displayMode === 'both' ? '(R$ E % AV)' : displayMode === 'currency' ? '(R$)' : '(%)'}
                 </th>
                 <th className="py-3 px-4 text-right min-w-[145px]">
-                  {displayMode === 'both' ? 'Variação Líquida (R$ e p.p.)' : displayMode === 'currency' ? 'Variação Líquida (R$)' : 'Variação Líquida (p.p.)'}
+                  {displayMode === 'both' ? 'VARIAÇÃO LÍQUIDA (R$ E P.P.)' : displayMode === 'currency' ? 'VARIAÇÃO LÍQUIDA (R$)' : 'VARIAÇÃO LÍQUIDA (P.P.)'}
                 </th>
-                <th className="py-3 px-4 text-right min-w-[110px]">Impacto no Modelo</th>
+                <th className="py-3 px-4 text-right min-w-[110px]">IMPACTO RELATIVO</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200 font-mono">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
               
               {/* 1. Receita Operacional Bruta */}
               <tr className="font-semibold bg-slate-50/40 dark:bg-slate-800/20">
-                <td className="py-3 px-4 font-sans text-slate-900 dark:text-white">
+                <td className="py-3 px-4 text-slate-900 dark:text-white">
                   1. Receita Operacional Bruta
                 </td>
                 <td className="py-3 px-4 text-right">
@@ -580,70 +580,128 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-3 px-4 text-right">
                   {renderVariation(0)}
                 </td>
-                <td className="py-3 px-4 text-right text-slate-400 tabular-nums font-sans">
-                  Base 100%
+                <td className="py-3 px-4 text-right font-mono text-slate-400 tabular-nums">
+                  0,0%
                 </td>
               </tr>
 
-              {/* 2. Tributos sobre Vendas / Consumo */}
-              <tr className="text-slate-600 dark:text-slate-300 bg-rose-50/20 dark:bg-rose-950/10">
-                <td className="py-2.5 px-4 pl-8 font-sans">
-                  (-) Tributos sobre Vendas (Consumo)
+              {/* 2. Deduções da Receita Bruta (Tributos sobre Vendas) */}
+              <tr className="text-slate-600 dark:text-slate-300 italic bg-rose-50/20 dark:bg-rose-950/10">
+                <td className="py-2.5 px-4 pl-8 not-italic">
+                  (-) Tributos Brutos sobre Vendas
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(porDentro.consumptionTaxesPaid, true, 'text-rose-600 dark:text-rose-400 font-medium')}
+                <td className="py-2.5 px-4 text-right not-italic">
+                  {renderCell(porDentro.totalDebits, true, 'text-rose-600 dark:text-rose-400 font-medium')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(hibrido.consumptionTaxesPaid, true, 'text-rose-600 dark:text-rose-400 font-medium')}
+                <td className="py-2.5 px-4 text-right not-italic">
+                  {renderCell(hibrido.totalDebits, true, 'text-rose-600 dark:text-rose-400 font-medium')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderVariation(hibrido.consumptionTaxesPaid - porDentro.consumptionTaxesPaid)}
+                <td className="py-2.5 px-4 text-right not-italic">
+                  {renderVariation(hibrido.totalDebits - porDentro.totalDebits)}
                 </td>
-                <td className="py-2.5 px-4 text-right font-sans text-[11px] text-slate-500">
-                  {hibrido.consumptionTaxesPaid > porDentro.consumptionTaxesPaid ? 'Maior Débito' : 'Menor Débito'}
+                <td className="py-2.5 px-4 text-right font-mono tabular-nums text-slate-500 not-italic">
+                  {porDentro.totalDebits > 0 
+                    ? formatPercent(((hibrido.totalDebits - porDentro.totalDebits) / porDentro.totalDebits) * 100, 1) 
+                    : '-'}
                 </td>
               </tr>
 
-              {/* Detalhamento da Parcela de Consumo */}
+              {/* Detalhamento dos tributos sobre vendas */}
               <tr className="text-slate-500 dark:text-slate-400 text-[11px]">
-                <td className="py-1 px-4 pl-12 font-sans">
-                  · Parcela ICMS, ISS, PIS e COFINS no DAS ({consumptionShare}% da taxa)
-                </td>
-                <td className="py-1 px-4 text-right text-amber-600 dark:text-amber-400">
-                  {renderCell(porDentro.consumptionTaxesPaid)}
-                </td>
-                <td className="py-1 px-4 text-right text-slate-400">
-                  (Substituído por IBS/CBS)
+                <td className="py-1 px-4 pl-12">
+                  · ICMS / IBS (Subnacional - Estados & Municípios)
                 </td>
                 <td className="py-1 px-4 text-right">
-                  {renderVariation(-porDentro.consumptionTaxesPaid)}
+                  {renderCell(porDentro.icmsDebit)}
                 </td>
-                <td className="py-1 px-4 text-right font-sans text-slate-400">
-                  Extinto no Híbrido
+                <td className="py-1 px-4 text-right">
+                  {renderCell(hibrido.icmsDebit, false, 'text-blue-600 dark:text-blue-400 font-semibold')}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderVariation(hibrido.icmsDebit - porDentro.icmsDebit)}
+                </td>
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-slate-400">
+                  {porDentro.icmsDebit > 0 
+                    ? formatPercent(((hibrido.icmsDebit - porDentro.icmsDebit) / porDentro.icmsDebit) * 100, 1) 
+                    : 'Novo IBS'}
                 </td>
               </tr>
 
               <tr className="text-slate-500 dark:text-slate-400 text-[11px]">
-                <td className="py-1 px-4 pl-12 font-sans">
-                  · Débito Pleno de IBS ({reformRates.ibsShare}%) + CBS ({reformRates.cbsShare}%)
-                </td>
-                <td className="py-1 px-4 text-right text-slate-400">
-                  (Não optou por fora)
-                </td>
-                <td className="py-1 px-4 text-right text-blue-600 dark:text-blue-400 font-semibold">
-                  {renderCell(hibrido.cbsIbsDebits)}
+                <td className="py-1 px-4 pl-12">
+                  · ISS (Municipal)
                 </td>
                 <td className="py-1 px-4 text-right">
-                  {renderVariation(hibrido.cbsIbsDebits)}
+                  {porDentro.issDebit > 0 ? renderCell(porDentro.issDebit) : <span className="font-mono text-slate-400">R$ 0</span>}
                 </td>
-                <td className="py-1 px-4 text-right font-sans text-blue-600 dark:text-blue-400">
-                  Alíquota {reformRates.referenceRate}%
+                <td className="py-1 px-4 text-right font-mono text-slate-400 tabular-nums">
+                  (Incorporado no IBS)
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderVariation(-porDentro.issDebit)}
+                </td>
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-slate-400">
+                  {porDentro.issDebit > 0 ? '-100,0%' : '-'}
+                </td>
+              </tr>
+
+              <tr className="text-slate-500 dark:text-slate-400 text-[11px]">
+                <td className="py-1 px-4 pl-12">
+                  · PIS/COFINS / CBS (Federal)
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderCell(porDentro.pisCofinsDebit)}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderCell(hibrido.pisCofinsDebit, false, 'text-blue-600 dark:text-blue-400 font-semibold')}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderVariation(hibrido.pisCofinsDebit - porDentro.pisCofinsDebit)}
+                </td>
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-slate-400">
+                  {porDentro.pisCofinsDebit > 0 
+                    ? formatPercent(((hibrido.pisCofinsDebit - porDentro.pisCofinsDebit) / porDentro.pisCofinsDebit) * 100, 1) 
+                    : 'Nova CBS'}
+                </td>
+              </tr>
+
+              <tr className="text-slate-500 dark:text-slate-400 text-[11px]">
+                <td className="py-1 px-4 pl-12">
+                  · IPI / Imposto Seletivo (Extrafiscal)
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {porDentro.selectiveDebit > 0 ? renderCell(porDentro.selectiveDebit) : <span className="font-mono text-slate-400">R$ 0</span>}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {hibrido.selectiveDebit > 0 ? renderCell(hibrido.selectiveDebit, false, 'text-amber-600') : <span className="font-mono text-slate-400">R$ 0</span>}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderVariation(hibrido.selectiveDebit - porDentro.selectiveDebit)}
+                </td>
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-slate-400">-</td>
+              </tr>
+
+              <tr className="text-slate-500 dark:text-slate-400 text-[11px] bg-amber-50/20 dark:bg-amber-950/10">
+                <td className="py-1 px-4 pl-12 font-medium text-amber-800 dark:text-amber-300">
+                  · Parcela IRPJ, CSLL e CPP no Simples Nacional
+                </td>
+                <td className="py-1 px-4 text-right text-amber-700 dark:text-amber-300">
+                  {renderCell(porDentro.directTaxesPaid)}
+                </td>
+                <td className="py-1 px-4 text-right text-amber-700 dark:text-amber-300">
+                  {renderCell(hibrido.directTaxesPaid)}
+                </td>
+                <td className="py-1 px-4 text-right">
+                  {renderVariation(0)}
+                </td>
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400 font-medium">
+                  Preservada no DAS
                 </td>
               </tr>
 
               {/* 3. Receita Operacional Líquida */}
               <tr className="font-semibold bg-slate-50/20 dark:bg-slate-800/10">
-                <td className="py-2.5 px-4 font-sans text-slate-900 dark:text-white">
+                <td className="py-2.5 px-4 text-slate-900 dark:text-white">
                   2. Receita Operacional Líquida
                 </td>
                 <td className="py-2.5 px-4 text-right">
@@ -655,15 +713,17 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-2.5 px-4 text-right">
                   {renderVariation(hibrido.netRevenue - porDentro.netRevenue, true)}
                 </td>
-                <td className="py-2.5 px-4 text-right font-sans text-slate-500">
-                  {formatPercent(((hibrido.netRevenue - porDentro.netRevenue) / porDentro.netRevenue) * 100, 1)}
+                <td className="py-2.5 px-4 text-right font-mono tabular-nums text-slate-500">
+                  {porDentro.netRevenue > 0 
+                    ? formatPercent(((hibrido.netRevenue - porDentro.netRevenue) / porDentro.netRevenue) * 100, 1) 
+                    : '-'}
                 </td>
               </tr>
 
-              {/* 4. Custos Operacionais / Compras */}
+              {/* 4. Custos e Insumos Brutos */}
               <tr className="text-slate-600 dark:text-slate-300">
-                <td className="py-2 px-4 pl-8 font-sans">
-                  (-) Custos de Insumos, Mercadorias, Energia & Terceiros
+                <td className="py-2 px-4 pl-8">
+                  (-) Insumos, Mercadorias, Energia & Terceiros
                 </td>
                 <td className="py-2 px-4 text-right">
                   {renderCell(porDentro.grossPurchases, true)}
@@ -674,56 +734,56 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-2 px-4 text-right">
                   {renderVariation(0)}
                 </td>
-                <td className="py-2 px-4 text-right font-sans text-slate-400">
-                  Mesmo custo bruto
+                <td className="py-2 px-4 text-right font-mono text-slate-400 tabular-nums">
+                  0,0%
                 </td>
               </tr>
 
-              {/* 5. Créditos Fiscais sobre Aquisições */}
+              {/* 5. (+) Créditos Tributários Recuperados */}
               <tr className="font-medium bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
-                <td className="py-2.5 px-4 pl-8 font-sans flex items-center gap-1.5">
-                  <span>(+) Créditos Fiscais sobre Compras (IBS/CBS)</span>
+                <td className="py-2.5 px-4 pl-8 flex items-center gap-1.5">
+                  <span>(+) Créditos Fiscais Recuperados (Entrada)</span>
                   <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-sans">
-                    (Não-cumulatividade)
+                    (Não-cumulatividade ampla)
                   </span>
                 </td>
                 <td className="py-2.5 px-4 text-right text-slate-400 font-sans">
                   R$ 0,00 (Vedado)
                 </td>
-                <td className="py-2.5 px-4 text-right text-emerald-600 dark:text-emerald-400 font-extrabold">
+                <td className="py-2.5 px-4 text-right">
                   {renderCell(hibrido.creditsAppropriated, false, 'text-emerald-600 dark:text-emerald-400 font-extrabold')}
                 </td>
                 <td className="py-2.5 px-4 text-right">
                   {renderVariation(hibrido.creditsAppropriated, true)}
                 </td>
-                <td className="py-2.5 px-4 text-right font-sans text-emerald-600 dark:text-emerald-400 font-bold">
+                <td className="py-2.5 px-4 text-right font-mono text-emerald-600 dark:text-emerald-400 tabular-nums font-bold">
                   Crédito 100%
                 </td>
               </tr>
 
-              {/* 6. Lucro Bruto Operacional */}
-              <tr className="font-semibold bg-slate-50/40 dark:bg-slate-800/30">
-                <td className="py-2.5 px-4 font-sans text-slate-900 dark:text-white">
-                  3. Lucro Bruto Operacional (Margem de Contribuição)
+              {/* Sublinha de Crédito repassado ao cliente B2B */}
+              <tr className="text-blue-700 dark:text-blue-400 text-[11px] bg-blue-50/30 dark:bg-blue-950/10">
+                <td className="py-1 px-4 pl-12 flex items-center gap-1">
+                  <span>↳ Crédito entregue ao cliente PJ (Vendas B2B {b2bSalesPercent}%)</span>
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(porDentro.grossProfit, false, 'font-bold text-slate-900 dark:text-white')}
+                <td className="py-1 px-4 text-right font-mono">
+                  {renderCell(porDentro.creditPassedToClientsBrl, false, 'text-amber-600 dark:text-amber-400')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(hibrido.grossProfit, false, 'font-bold text-slate-900 dark:text-white')}
+                <td className="py-1 px-4 text-right font-mono">
+                  {renderCell(hibrido.creditPassedToClientsBrl, false, 'text-blue-600 dark:text-blue-400 font-semibold')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderVariation(hibrido.grossProfit - porDentro.grossProfit, true)}
+                <td className="py-1 px-4 text-right font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                  +{formatBRL(hibrido.b2bClientGainBrl)}
                 </td>
-                <td className="py-2.5 px-4 text-right font-sans text-slate-500">
-                  {porDentro.grossProfit > 0 ? formatPercent(((hibrido.grossProfit - porDentro.grossProfit) / porDentro.grossProfit) * 100, 1) : '-'}
+                <td className="py-1 px-4 text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">
+                  +{formatPercent(hibrido.creditPassedToClientsRate - porDentro.creditPassedToClientsRate)} p.p.
                 </td>
               </tr>
 
-              {/* 7. Folha de Pagamento */}
+              {/* 6. Despesas com Pessoal (Folha) */}
               <tr className="text-slate-600 dark:text-slate-300">
-                <td className="py-2 px-4 pl-8 font-sans">
-                  (-) Folha de Pagamento & Encargos (CPP Isenta no Simples)
+                <td className="py-2 px-4 pl-8">
+                  (-) Folha de Pagamento & Encargos Sociais
                 </td>
                 <td className="py-2 px-4 text-right">
                   {renderCell(porDentro.payroll, true)}
@@ -734,15 +794,15 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-2 px-4 text-right">
                   {renderVariation(0)}
                 </td>
-                <td className="py-2 px-4 text-right font-sans text-emerald-600 dark:text-emerald-400">
-                  Isenção 20% CPP
+                <td className="py-2 px-4 text-right font-mono text-emerald-600 dark:text-emerald-400 tabular-nums font-medium">
+                  Isenção CPP 20%
                 </td>
               </tr>
 
-              {/* 8. Outras Despesas */}
+              {/* 7. Outras Despesas */}
               <tr className="text-slate-600 dark:text-slate-300">
-                <td className="py-2 px-4 pl-8 font-sans">
-                  (-) Outras Despesas Operacionais Administrativas
+                <td className="py-2 px-4 pl-8">
+                  (-) Outras Despesas Operacionais
                 </td>
                 <td className="py-2 px-4 text-right">
                   {renderCell(porDentro.otherOperationalExpenses, true)}
@@ -753,33 +813,90 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-2 px-4 text-right">
                   {renderVariation(0)}
                 </td>
-                <td className="py-2 px-4 text-right font-sans text-slate-400">
-                  Idêntico
+                <td className="py-2 px-4 text-right font-mono text-slate-400 tabular-nums">
+                  0,0%
                 </td>
               </tr>
 
-              {/* 9. Tributos Diretos Retidos no Simples (IRPJ, CSLL e CPP) */}
-              <tr className="text-slate-700 dark:text-slate-300 bg-amber-50/20 dark:bg-amber-950/10">
-                <td className="py-2.5 px-4 pl-8 font-sans">
-                  (-) Tributos Diretos do Simples (IRPJ, CSLL e CPP/INSS)
+              {/* 8. Resumo da Carga Tributária Líquida */}
+              <tr className="font-bold bg-blue-50/50 dark:bg-blue-950/20 text-blue-950 dark:text-blue-200 border-t-2 border-slate-300 dark:border-slate-700">
+                <td className="py-3 px-4">
+                  Total de Tributos Líquidos Efetivos Recolhidos
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(porDentro.directTaxesPaid, true, 'text-amber-700 dark:text-amber-300 font-semibold')}
+                <td className="py-3 px-4 text-right">
+                  {renderCell(porDentro.totalTaxesPaid, false, 'text-amber-600 dark:text-amber-400 font-bold')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderCell(hibrido.directTaxesPaid, true, 'text-amber-700 dark:text-amber-300 font-semibold')}
+                <td className="py-3 px-4 text-right">
+                  {renderCell(hibrido.totalTaxesPaid, false, 'text-blue-600 dark:text-blue-400 font-bold')}
                 </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderVariation(0)}
+                <td className="py-3 px-4 text-right">
+                  {renderVariation(hibrido.totalTaxesPaid - porDentro.totalTaxesPaid)}
                 </td>
-                <td className="py-2.5 px-4 text-right font-sans text-slate-400">
-                  Paridade exata ({100 - consumptionShare}%)
+                <td className={`py-3 px-4 text-right font-mono tabular-nums font-bold ${
+                  hibrido.totalTaxesPaid > porDentro.totalTaxesPaid ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                }`}>
+                  {porDentro.totalTaxesPaid > 0 
+                    ? `${formatPercent(((hibrido.totalTaxesPaid - porDentro.totalTaxesPaid) / porDentro.totalTaxesPaid) * 100, 1)}` 
+                    : '-'}
                 </td>
               </tr>
 
-              {/* 10. Resultado Operacional Líquido Final */}
-              <tr className="font-extrabold text-sm bg-slate-100 dark:bg-slate-800/90 text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700">
-                <td className="py-3 px-4 font-sans">
+              {/* Carga Efetiva % */}
+              <tr className="font-semibold text-slate-700 dark:text-slate-300 bg-slate-50/40 dark:bg-slate-800/30">
+                <td className="py-2.5 px-4 pl-8">
+                  Carga Tributária Efetiva (% sobre Receita Bruta)
+                </td>
+                <td className="py-2.5 px-4 text-right">
+                  {displayMode === 'currency' ? (
+                    <span className="font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                      {formatBRL(porDentro.totalTaxesPaid)}
+                    </span>
+                  ) : displayMode === 'percent' ? (
+                    <span className="font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                      {formatPercent(porDentro.effectiveTaxBurdenPercent)}
+                    </span>
+                  ) : (
+                    <div className="flex flex-col items-end leading-tight">
+                      <span className="font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                        {formatPercent(porDentro.effectiveTaxBurdenPercent)}
+                      </span>
+                      <span className="text-[10px] font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                        {formatBRL(porDentro.totalTaxesPaid)}
+                      </span>
+                    </div>
+                  )}
+                </td>
+                <td className="py-2.5 px-4 text-right">
+                  {displayMode === 'currency' ? (
+                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">
+                      {formatBRL(hibrido.totalTaxesPaid)}
+                    </span>
+                  ) : displayMode === 'percent' ? (
+                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">
+                      {formatPercent(hibrido.effectiveTaxBurdenPercent)}
+                    </span>
+                  ) : (
+                    <div className="flex flex-col items-end leading-tight">
+                      <span className="font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">
+                        {formatPercent(hibrido.effectiveTaxBurdenPercent)}
+                      </span>
+                      <span className="text-[10px] font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                        {formatBRL(hibrido.totalTaxesPaid)}
+                      </span>
+                    </div>
+                  )}
+                </td>
+                <td className="py-2.5 px-4 text-right">
+                  {renderVariation(hibrido.totalTaxesPaid - porDentro.totalTaxesPaid)}
+                </td>
+                <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold">
+                  {hibrido.totalTaxesPaid > porDentro.totalTaxesPaid ? 'Aumento de Carga' : 'Economia Tributária'}
+                </td>
+              </tr>
+
+              {/* 9. Resultado Operacional Líquido */}
+              <tr className="font-extrabold text-sm bg-slate-100 dark:bg-slate-800/90 text-slate-900 dark:text-white border-t border-slate-300 dark:border-slate-700">
+                <td className="py-3 px-4">
                   (=) Resultado Operacional Líquido Final
                 </td>
                 <td className="py-3 px-4 text-right">
@@ -791,66 +908,10 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
                 <td className="py-3 px-4 text-right">
                   {renderVariation(comparison.operatingResultDifferenceBrl, true)}
                 </td>
-                <td className={`py-3 px-4 text-right font-sans font-extrabold ${
+                <td className={`py-3 px-4 text-right font-mono tabular-nums font-extrabold ${
                   comparison.operatingResultDifferenceBrl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                 }`}>
                   {comparison.operatingResultDifferenceBrl >= 0 ? 'Ganho Híbrido' : 'Economia Por Dentro'}
-                </td>
-              </tr>
-
-              {/* Linha Resumo 1: Total Efetivo de Tributos Recolhidos */}
-              <tr className="font-bold bg-blue-50/50 dark:bg-blue-950/20 text-blue-950 dark:text-blue-200 border-t border-slate-200 dark:border-slate-700">
-                <td className="py-2.5 px-4 font-sans">
-                  Total Efetivo de Tributos Recolhidos aos Cofres Públicos
-                </td>
-                <td className="py-2.5 px-4 text-right text-amber-600 dark:text-amber-400">
-                  {renderCell(porDentro.totalTaxesPaid, false, 'text-amber-600 dark:text-amber-400 font-bold')}
-                </td>
-                <td className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400">
-                  {renderCell(hibrido.totalTaxesPaid, false, 'text-blue-600 dark:text-blue-400 font-bold')}
-                </td>
-                <td className="py-2.5 px-4 text-right">
-                  {renderVariation(hibrido.totalTaxesPaid - porDentro.totalTaxesPaid)}
-                </td>
-                <td className="py-2.5 px-4 text-right font-sans text-slate-500">
-                  {hibrido.totalTaxesPaid > porDentro.totalTaxesPaid ? `+${formatBRL(hibrido.totalTaxesPaid - porDentro.totalTaxesPaid)}` : 'Mais econômico'}
-                </td>
-              </tr>
-
-              {/* Linha Resumo 2: Crédito Transferido para Clientes PJ */}
-              <tr className="bg-slate-50/70 dark:bg-slate-800/50 font-semibold">
-                <td className="py-2.5 px-4 font-sans text-slate-900 dark:text-white">
-                  Crédito Fiscal Entregue ao Cliente PJ (% e R$)
-                </td>
-                <td className="py-2.5 px-4 text-right text-amber-600 dark:text-amber-400 font-bold">
-                  {displayMode === 'currency' ? (
-                    formatBRL(porDentro.creditPassedToClientsBrl)
-                  ) : displayMode === 'percent' ? (
-                    formatPercent(porDentro.creditPassedToClientsRate)
-                  ) : (
-                    <div className="flex flex-col items-end leading-tight">
-                      <span>{formatBRL(porDentro.creditPassedToClientsBrl)}</span>
-                      <span className="text-[10px] text-slate-500 font-normal">{formatPercent(porDentro.creditPassedToClientsRate)}</span>
-                    </div>
-                  )}
-                </td>
-                <td className="py-2.5 px-4 text-right text-emerald-600 dark:text-emerald-400 font-bold">
-                  {displayMode === 'currency' ? (
-                    formatBRL(hibrido.creditPassedToClientsBrl)
-                  ) : displayMode === 'percent' ? (
-                    formatPercent(hibrido.creditPassedToClientsRate)
-                  ) : (
-                    <div className="flex flex-col items-end leading-tight">
-                      <span>{formatBRL(hibrido.creditPassedToClientsBrl)}</span>
-                      <span className="text-[10px] text-emerald-600 font-normal">{formatPercent(hibrido.creditPassedToClientsRate)}</span>
-                    </div>
-                  )}
-                </td>
-                <td className="py-2.5 px-4 text-right text-emerald-600 dark:text-emerald-400 font-bold">
-                  +{formatBRL(hibrido.b2bClientGainBrl)}
-                </td>
-                <td className="py-2.5 px-4 text-right font-sans text-emerald-600 dark:text-emerald-400 font-bold">
-                  +{formatPercent(hibrido.creditPassedToClientsRate - porDentro.creditPassedToClientsRate)} p.p.
                 </td>
               </tr>
 
@@ -858,11 +919,11 @@ export const SimplesSimulator: React.FC<SimplesSimulatorProps> = ({
           </table>
         </div>
 
-        {/* Nota Metodológica Explicativa da DRE */}
+        {/* Nota Explicativa de Rodapé */}
         <div className="p-4 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-start gap-2">
-          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
+          <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
           <span>
-            <strong>Fundamento Contábil e Legal (Art. 146-A CF & PLP 68/2024):</strong> Na coluna <em>Simples "Por Dentro"</em>, a guia única do DAS de {dasRate.toFixed(2)}% ({formatBRL(porDentro.dasTotalPaid)}) é formalmente decomposta: a parcela de tributos sobre consumo ({consumptionShare}% = {formatBRL(porDentro.consumptionTaxesPaid)}) é deduzida da Receita Bruta para apurar a Receita Líquida, e a parcela direta de IRPJ, CSLL e CPP ({100 - consumptionShare}% = {formatBRL(porDentro.directTaxesPaid)}) é subtraída abaixo do lucro bruto operacional. No <em>Simples "Híbrido"</em>, o optante apura IBS/CBS por fora com não-cumulatividade plena ({reformRates.referenceRate}%), recolhendo apenas os tributos diretos pelo Simples e repassando crédito total aos seus compradores corporativos.
+            <strong>Análise Vertical (% AV) e Fundamento Legal (Art. 146-A CF & PLP 68/2024):</strong> Na coluna <em>Simples "Por Dentro"</em>, a empresa recolhe a guia integral do DAS ({dasRate.toFixed(2)}% = {formatBRL(porDentro.dasTotalPaid)}), sem apropriação de créditos de compras e com repasse restrito de crédito (~4,5%). No <em>Simples "Híbrido"</em>, a empresa apura IBS e CBS pelo regime regular ({reformRates.referenceRate}%) com crédito pleno nas compras ({formatBRL(hibrido.creditsAppropriated)}), mantendo os tributos diretos (IRPJ, CSLL e CPP) protegidos no Simples Nacional e transferindo crédito integral de 100% aos clientes corporativos (B2B).
           </span>
         </div>
 

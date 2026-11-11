@@ -762,24 +762,46 @@ export function calculateSimplesComparison(
   const totalPurchases = input.cogsAndInputs + input.capitalGoodsAndEnergy + input.servicesHired;
 
   // Parcela dos tributos sobre consumo no DAS (ICMS, ISS, PIS, COFINS):
-  // Ex: se o DAS é 8.5% e a fatia de consumo é 45%, a alíquota de consumo é 3.825%
   const porDentroConsumptionTaxesRate = dasEffectiveRate * (dasConsumptionSharePercent / 100);
   const porDentroConsumptionTaxesPaid = revenue * (porDentroConsumptionTaxesRate / 100);
-  const porDentroNetRevenue = revenue - porDentroConsumptionTaxesPaid;
+
+  // Parcela dos tributos diretos e previdenciários no DAS (IRPJ, CSLL, CPP/INSS patronal):
+  const porDentroDirectTaxesRate = dasEffectiveRate * (dasDirectTaxesSharePercent / 100);
+  const porDentroDirectTaxesPaid = revenue * (porDentroDirectTaxesRate / 100);
+
+  // Decomposição detalhada dos tributos no DAS para exibição na DRE oficial:
+  const isService = ['servicos_geral', 'servicos_regulamentados', 'servicos_reduzidos'].includes(input.sector);
+  const isIndustry = input.sector === 'industria_transformacao';
+
+  let porDentroIcmsDebit = 0;
+  let porDentroIssDebit = 0;
+  let porDentroPisCofinsDebit = 0;
+  let porDentroIpiDebit = 0;
+
+  if (isService) {
+    porDentroIssDebit = porDentroConsumptionTaxesPaid * 0.72;
+    porDentroPisCofinsDebit = porDentroConsumptionTaxesPaid * 0.28;
+  } else if (isIndustry) {
+    porDentroIpiDebit = revenue * (dasEffectiveRate * 0.05 / 100);
+    porDentroIcmsDebit = Math.max(0, porDentroConsumptionTaxesPaid - porDentroIpiDebit) * 0.72;
+    porDentroPisCofinsDebit = Math.max(0, porDentroConsumptionTaxesPaid - porDentroIpiDebit) * 0.28;
+  } else {
+    // Comércio
+    porDentroIcmsDebit = porDentroConsumptionTaxesPaid * 0.72;
+    porDentroPisCofinsDebit = porDentroConsumptionTaxesPaid * 0.28;
+  }
+
+  // No Simples Por Dentro, a dedução bruta de vendas é a guia integral do DAS
+  const porDentroTotalDebits = dasTotalPaid;
+  const porDentroNetRevenue = revenue - porDentroTotalDebits;
 
   // No Simples tradicional, a empresa não apropria créditos de compras
   const porDentroCreditsAppropriated = 0;
   const porDentroNetPurchasesCost = totalPurchases;
   const porDentroGrossProfit = porDentroNetRevenue - porDentroNetPurchasesCost;
 
-  // Parcela dos tributos diretos e previdenciários no DAS (IRPJ, CSLL, CPP/INSS patronal):
-  // Ex: 55% do DAS = 4.675% da receita
-  const porDentroDirectTaxesRate = dasEffectiveRate * (dasDirectTaxesSharePercent / 100);
-  const porDentroDirectTaxesPaid = revenue * (porDentroDirectTaxesRate / 100);
-
-  // Resultado Operacional = Lucro Bruto - Folha - Outras Despesas - Tributos Diretos
-  // Que matematicamente equivale a: Receita - dasTotalPaid - totalPurchases - folha - outras despesas
-  const porDentroOperatingResult = porDentroGrossProfit - input.payroll - input.otherOperationalExpenses - porDentroDirectTaxesPaid;
+  // Resultado Operacional = Receita Líquida - Compras - Folha - Outras Despesas
+  const porDentroOperatingResult = porDentroNetRevenue - totalPurchases - input.payroll - input.otherOperationalExpenses;
   const porDentroNetMarginPercent = revenue > 0 ? (porDentroOperatingResult / revenue) * 100 : 0;
   const porDentroEffectiveTaxBurdenPercent = revenue > 0 ? (dasTotalPaid / revenue) * 100 : 0;
   
@@ -804,8 +826,17 @@ export function calculateSimplesComparison(
   else if (reformRates.specialTreatment === 'reduced_30') appliedRateFactor = 0.70;
 
   const appliedIvaRate = standardIvaRate * appliedRateFactor;
-  const cbsIbsDebits = revenue * (appliedIvaRate / 100);
-  const hibridoNetRevenue = revenue - cbsIbsDebits;
+  const appliedIbsRate = reformRates.ibsShare * appliedRateFactor;
+  const appliedCbsRate = reformRates.cbsShare * appliedRateFactor;
+
+  const hibridoIbsDebit = revenue * (appliedIbsRate / 100);
+  const hibridoIssDebit = 0; // Incorporado no IBS
+  const hibridoPisCofinsDebit = revenue * (appliedCbsRate / 100);
+  const hibridoSelectiveDebit = revenue * (reformRates.selectiveTaxRate / 100);
+  const cbsIbsDebits = hibridoIbsDebit + hibridoPisCofinsDebit + hibridoSelectiveDebit;
+
+  const hibridoTotalDebits = cbsIbsDebits + dasSegregatedPaid;
+  const hibridoNetRevenue = revenue - hibridoTotalDebits;
 
   // Crédito pleno sobre compras de insumos, bens de capital, telecom, serviços
   const purchasesFromNormal = totalPurchases * (1 - (reformRates.purchasesFromSimplesPercent / 100));
@@ -816,7 +847,7 @@ export function calculateSimplesComparison(
   const hibridoNetPurchasesCost = totalPurchases - fullPurchasesCredits;
   const hibridoGrossProfit = hibridoNetRevenue - hibridoNetPurchasesCost;
   const hibridoTotalTaxesPaid = dasSegregatedPaid + netCbsIbsPaid;
-  const hibridoOperatingResult = hibridoGrossProfit - input.payroll - input.otherOperationalExpenses - dasSegregatedPaid;
+  const hibridoOperatingResult = hibridoNetRevenue - totalPurchases + fullPurchasesCredits - input.payroll - input.otherOperationalExpenses;
   const hibridoNetMarginPercent = revenue > 0 ? (hibridoOperatingResult / revenue) * 100 : 0;
   const hibridoEffectiveTaxBurdenPercent = revenue > 0 ? (hibridoTotalTaxesPaid / revenue) * 100 : 0;
 
@@ -824,7 +855,6 @@ export function calculateSimplesComparison(
   const b2bClientGainBrl = Math.max(0, hibridoCreditPassedBrl - porDentroCreditPassedBrl);
 
   // Ponto de virada (Breakeven B2B %):
-  // Qual % de vendas B2B justifica o recolhimento híbrido compensando a desvantagem comercial?
   const directTaxDiff = hibridoTotalTaxesPaid - dasTotalPaid;
   const creditGainPerB2B = (appliedIvaRate - creditPassedToClientsRate) / 100;
   let b2bBreakevenPercent = creditGainPerB2B > 0 ? (directTaxDiff / (revenue * creditGainPerB2B)) * 100 : 50;
@@ -863,6 +893,11 @@ export function calculateSimplesComparison(
       creditPassedToClientsRate,
       creditPassedToClientsBrl: porDentroCreditPassedBrl,
       b2bClientDisadvantageBrl,
+      icmsDebit: porDentroIcmsDebit,
+      issDebit: porDentroIssDebit,
+      pisCofinsDebit: porDentroPisCofinsDebit,
+      selectiveDebit: porDentroIpiDebit,
+      totalDebits: porDentroTotalDebits,
     },
     hibrido: {
       grossRevenue: revenue,
@@ -884,9 +919,14 @@ export function calculateSimplesComparison(
       cbsIbsDebits,
       cbsIbsCredits: fullPurchasesCredits,
       netCbsIbsPaid,
+      b2bClientGainBrl,
+      icmsDebit: hibridoIbsDebit,
+      issDebit: hibridoIssDebit,
+      pisCofinsDebit: hibridoPisCofinsDebit,
+      selectiveDebit: hibridoSelectiveDebit,
+      totalDebits: hibridoTotalDebits,
       creditPassedToClientsRate: appliedIvaRate,
       creditPassedToClientsBrl: hibridoCreditPassedBrl,
-      b2bClientGainBrl,
     },
     comparison: {
       taxDifferenceBrl: directTaxDiff,
